@@ -7,3 +7,4 @@ ruby "~> 2.7.0"
 
 gem "sinatra", "~> 2.0.8"
 gem "puma", "~> 4.3.3"
+gem "dotenv", "~> 2.7.5"
