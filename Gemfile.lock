@@ -26,6 +26,7 @@ GEM
     rack-protection (2.0.8.1)
       rack
     ruby2_keywords (0.0.2)
+    sequel (5.30.0)
     sinatra (2.0.8.1)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -50,6 +51,7 @@ DEPENDENCIES
   dotenv (~> 2.7.5)
   pg (~> 1.2.2)
   puma (~> 4.3.3)
+  sequel (~> 5.30.0)
   sinatra (~> 2.0.8)
   telegram-bot-ruby (~> 0.12.0)
 
