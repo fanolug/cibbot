@@ -12,10 +12,19 @@ class Bot
   DB = if ENV['DATABASE_URL']
     Sequel.connect(ENV['DATABASE_URL'])
   else
-    Sequel.sqlite(ENV['DATABASE_DEV']) # in-memory
+    # Sequel.sqlite ## in-memory
+    Sequel.sqlite(ENV['DATABASE_DEV'])
+    Sequel.connect("sqlite://#{ENV['DATABASE_DEV']}")
   end
-  DB.execute("CREATE TABLE IF NOT EXISTS users('firstname' char, 'lastname' char, 'username' char, 'chatid' char, 'date' integer)")
   
+  DB.create_table :users do
+    String :username
+    String :firstname
+    String :lastname
+    String :chatid
+    Date :start_date
+  end
+
   def run!
     Dotenv.load
     name = 'Cibbe telegram bot'
@@ -36,11 +45,14 @@ class Bot
     when '', /^\/help/i # /help
       send_help(message)
     when '', /^\/start/i # /start
-      DB.execute("INSERT INTO users VALUES ('#{message.from.first_name}', '#{message.from.last_name}', '#{message.from.username}', '#{message.chat.id}', '#{Time.now}')")
+      chatid = DB["SELECT chatid FROM users WHERE chatid = #{message.chat.id}"]
+      if not chatid.map(:chatid)[0]
+        DB.execute("INSERT INTO users VALUES ('#{message.from.first_name}', '#{message.from.last_name}', '#{message.from.username}', '#{message.chat.id}', '#{Time.now}')")
+      end
       send_message(message.chat.id, "Ciao #{message.from.first_name}, benvenuto!!")
     when '', /^\/users/i # /users
       users = DB.execute("SELECT * FROM users")
-      users.each do | user |
+      for user in users
         send_message(message.chat.id, user.join(" "))
       end
     end
