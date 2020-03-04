@@ -12,12 +12,10 @@ class Bot
   DB = if ENV['DATABASE_URL']
     Sequel.connect(ENV['DATABASE_URL'])
   else
-    # Sequel.sqlite ## in-memory
-    Sequel.sqlite(ENV['DATABASE_DEV'])
-    Sequel.connect("sqlite://#{ENV['DATABASE_DEV']}")
+    Sequel.sqlite('cibbe.sql')
   end
-  
-  DB.create_table :users do
+
+  DB.create_table? :users do
     String :username
     String :firstname
     String :lastname
@@ -45,15 +43,18 @@ class Bot
     when '', /^\/help/i # /help
       send_help(message)
     when '', /^\/start/i # /start
-      chatid = DB["SELECT chatid FROM users WHERE chatid = #{message.chat.id}"]
-      if not chatid.map(:chatid)[0]
-        DB.execute("INSERT INTO users VALUES ('#{message.from.first_name}', '#{message.from.last_name}', '#{message.from.username}', '#{message.chat.id}', '#{Time.now}')")
+      chatid = DB[:users].where(:chatid => "#{message.chat.id}").get(:chatid)
+      if not chatid
+        DB[:users].insert(:username => "#{message.from.username}", :firstname => "#{message.from.first_name}", :lastname => "#{message.from.last_name}", :chatid => "#{message.chat.id}", :start_date => "#{Time.now}")
       end
       send_message(message.chat.id, "Ciao #{message.from.first_name}, benvenuto!!")
     when '', /^\/users/i # /users
-      users = DB.execute("SELECT * FROM users")
-      for user in users
-        send_message(message.chat.id, user.join(" "))
+      users = DB[:users]
+      send_message(message.chat.id, users.map(:username).join(", "))
+    when /^\/punta (.+)/i # /punta
+      chatids = DB[:users].select(:chatid).all
+      for chatid in chatids
+        send_message(chatid[:chatid], $1)
       end
     end
   end
