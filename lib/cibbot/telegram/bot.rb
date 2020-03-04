@@ -47,7 +47,7 @@ class Bot
   end
 
   def send_help(message)
-    send_message(message.from.id, "Usage:\n/ilinkdellasettimana <descrizione, link eccetera> - Posta su Twitter")
+    send_message(message.from.id, "Usage:\n/punta <descrizione, link eccetera> - Notifica la tua punta a tutti i cibbers")
   end
 
   def validate_message(message, text)
