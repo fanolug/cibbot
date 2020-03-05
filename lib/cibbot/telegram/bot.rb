@@ -58,6 +58,7 @@ class Bot
         reply_chatid = DB[:users].where(:username=>mentioned_user(message)).get(:chatid)
         send_reply(reply_chatid, "@#{text.from.username} viene a '#{punta_message(message)}'")
         send_message(text.from.id, "Hai avvisato @#{mentioned_user(message)} che vai a '#{punta_message(message)}'")
+        edit_message(text.from.id, text.message.message_id, message, nil)
         logger.info "Sending Reply: user=#{text.from.username} text=vado a #{text.message}, uid:#{text.from.id}"
       end
       if text.data == 'no'
@@ -68,7 +69,6 @@ class Bot
 
     # display an help message
     when '', /^\/help/i # /help
-      # Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
       send_help(message)
     when '', /^\/start/i # /start
       chatid = DB[:users].where(:chatid => "#{message.chat.id}").get(:chatid)
