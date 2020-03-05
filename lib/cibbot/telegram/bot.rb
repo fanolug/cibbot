@@ -8,11 +8,12 @@ require 'sequel'
 class Bot
   include Logging
   include TelegramClient
+  Dotenv.load
 
   DB = if ENV['DATABASE_URL']
     Sequel.connect(ENV['DATABASE_URL'])
   else
-    Sequel.sqlite('cibbe.sql')
+    Sequel.sqlite(ENV['DATABASE_DEV'])
   end
 
   DB.create_table? :users do
@@ -24,7 +25,7 @@ class Bot
   end
 
   def run!
-    Dotenv.load
+    # Dotenv.load
     name = 'Cibbe telegram bot'
     Process.setproctitle(name)
     Process.daemon(true, true) unless ENV["DEVELOPMENT"]
