@@ -14,6 +14,33 @@ module TelegramClient
     end
   end
 
+  def send_message_inline_reply(chat_id, text, markup)
+    if text.to_s == ""
+      logger.info "Blank message text (#send_message)"
+      return
+    end
+
+    begin
+      telegram_client.api.send_message(chat_id: chat_id, text: text, reply_markup: markup)
+    rescue Telegram::Bot::Exceptions::ResponseError => exception
+      logger.error "#{exception.message} (#send_message chat_id: #{chat_id}, text: #{text}, markup: #{markup})"
+    end
+  end
+
+
+  def send_reply(chat_id, text)
+    if text.to_s == ""
+      logger.info "Blank message text (#send_message)"
+      return
+    end
+
+    begin
+      telegram_client.api.send_message(chat_id: chat_id, text: text)
+    rescue Telegram::Bot::Exceptions::ResponseError => exception
+      logger.error "#{exception.message} (#send_message chat_id: #{chat_id}, text: #{text.message})"
+    end
+  end
+
   private
 
   def telegram_client(options = {})
@@ -26,6 +53,7 @@ module TelegramClient
       telegram_client.run do |bot|
         bot.listen do |message|
           handle_message(message)
+          # reply_message(message)
         end
       end
     rescue Telegram::Bot::Exceptions::ResponseError => exception
