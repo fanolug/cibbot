@@ -1,10 +1,12 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    ansi (1.5.0)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
+    builder (3.2.4)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     descendants_tracker (0.0.4)
@@ -15,6 +17,12 @@ GEM
       multipart-post (>= 1.2, < 3)
     ice_nine (0.11.2)
     inflecto (0.0.2)
+    minitest (5.14.0)
+    minitest-reporters (1.4.2)
+      ansi
+      builder
+      minitest (>= 5.0)
+      ruby-progressbar
     multipart-post (2.1.1)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
@@ -25,6 +33,10 @@ GEM
     rack (2.2.2)
     rack-protection (2.0.8.1)
       rack
+    rack-test (1.1.0)
+      rack (>= 1.0, < 3)
+    rake (13.0.1)
+    ruby-progressbar (1.10.1)
     ruby2_keywords (0.0.2)
     sequel (5.30.0)
     sinatra (2.0.8.1)
@@ -50,8 +62,12 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv (~> 2.7.5)
+  minitest (~> 5.14)
+  minitest-reporters (~> 1.4)
   pg (~> 1.2.2)
   puma (~> 4.3.3)
+  rack-test (~> 1.1)
+  rake (~> 13.0.1)
   sequel (~> 5.30.0)
   sinatra (~> 2.0.8)
   sqlite3 (= 1.4.2)

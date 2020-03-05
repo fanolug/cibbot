@@ -1,3 +1,13 @@
 # cibbot
 
-Il bot Telegram di cibbe
+Il bot Telegram di Cibbe™
+
+### Setup
+
+    bundle
+
+### Running tests
+
+    bundle exec rake test
+
+Copyright (c) 2020 FortunaeLUG, released under the MIT License.
