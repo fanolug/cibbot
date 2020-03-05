@@ -56,14 +56,14 @@ class Bot
       message = text.message.text
       if text.data == 'yes'
         reply_chatid = DB[:users].where(:username=>mentioned_user(message)).get(:chatid)
-        send_reply(reply_chatid, "@#{text.from.username} viene a '#{punta_message(message)}'")
-        send_message(text.from.id, "Hai avvisato @#{mentioned_user(message)} che vai a '#{punta_message(message)}'")
+        send_message(text.from.id, "[reply-confirm] Hai avvisato @#{mentioned_user(message)} che vai a '#{punta_message(message)}'")
+        send_reply(reply_chatid, "[reply] @#{text.from.username} viene a '#{punta_message(message)}'")
         edit_message(text.from.id, text.message.message_id, message, nil)
         logger.info "Sending Reply: user=#{text.from.username} text=vado a #{text.message}, uid:#{text.from.id}"
       end
       if text.data == 'no'
         reply_chatid = DB[:users].where(:username=>mentioned_user(message)).get(:chatid)
-        send_reply(reply_chatid, "@#{text.from.username} non viene a '#{punta_message(message)}'")
+        send_reply(reply_chatid, "[reply-reject] @#{text.from.username} non viene a '#{punta_message(message)}'")
         logger.info "Sending Reply: user=#{text.from.username} text=non vado a #{text.message}, uid:#{text.from.id}"
       end
 
@@ -93,7 +93,7 @@ class Bot
       markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb, one_time_keyboard: true)
       chatids = DB[:users].select(:chatid).all
       for chatid in chatids
-        send_message_inline_reply(chatid[:chatid], "from @#{message.from.username}: #{$1}", markup)
+        send_message_inline_reply(chatid[:chatid], "[punta] from @#{message.from.username}: #{$1}", markup)
       end
     when '/stop'
       # See more: https://core.telegram.org/bots/api#replykeyboardremove
