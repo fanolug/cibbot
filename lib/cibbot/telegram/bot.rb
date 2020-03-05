@@ -56,7 +56,7 @@ class Bot
       message = text.message.text
       if text.data == 'yes'
         reply_chatid = DB[:users].where(:username=>mentioned_user(message)).get(:chatid)
-        send_message(text.from.id, "[reply-confirm] Hai avvisato @#{mentioned_user(message)} che vai a '#{punta_message(message)}'")
+        send_message(text.from.id, "[reply-confirm] Hai confermato a @#{mentioned_user(message)} che vai a '#{punta_message(message)}'")
         send_reply(reply_chatid, "[reply] @#{text.from.username} viene a '#{punta_message(message)}'")
         edit_message(text.from.id, text.message.message_id, message, nil)
         logger.info "Sending Reply: user=#{text.from.username} text=vado a #{text.message}, uid:#{text.from.id}"
@@ -91,7 +91,7 @@ class Bot
         # Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Non Vado', callback_data: 'no', one_time_keyboard: true),
       ]
       markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb, one_time_keyboard: true)
-      chatids = DB[:users].select(:chatid).all
+      chatids = DB[:users].exclude(username: message.from.username).select(:chatid).all
       for chatid in chatids
         send_message_inline_reply(chatid[:chatid], "[punta] from @#{message.from.username}: #{$1}", markup)
       end
