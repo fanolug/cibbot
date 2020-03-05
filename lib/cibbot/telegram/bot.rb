@@ -81,7 +81,13 @@ class Bot
           :start_date => "#{Time.now}"
         )
       end
-      send_message(message.chat.id, "Ciao #{message.from.first_name}, benvenuto!!")
+      kb =[
+        Telegram::Bot::Types::KeyboardButton.new(text: '/start'),
+        Telegram::Bot::Types::KeyboardButton.new(text: '/help'),
+        Telegram::Bot::Types::KeyboardButton.new(text: '/stop'),
+      ]
+      markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: kb)
+      send_message_inline_reply(message.chat.id, "Ciao #{message.from.first_name}, benvenuto!!", markup)
     when '', /^\/users/i # /users DEBUG
       users = DB[:users]
       send_message(message.chat.id, users.map(:username).join(", "))
@@ -99,7 +105,7 @@ class Bot
       # See more: https://core.telegram.org/bots/api#replykeyboardremove
       kb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
       delete_chatid = DB[:users].where(:chatid=>message.chat.id).delete
-      send_message_inline_reply(message.chat.id, 'Sorry to see you go :(', kb)
+      send_message_inline_reply(message.chat.id, 'Ci dispiace vederti andare via :(', kb)
     end
   end
 
