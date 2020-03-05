@@ -25,7 +25,6 @@ class Bot
   end
 
   def run!
-    # Dotenv.load
     name = 'Cibbe telegram bot'
     Process.setproctitle(name)
     Process.daemon(true, true) unless ENV["DEVELOPMENT"]
@@ -61,7 +60,7 @@ class Bot
   end
 
   def send_help(message)
-    send_message(message.from.id, "Usage:\n/punta <descrizione, link eccetera> - Notifica la tua punta a tutti i cibbers")
+    send_message(message.from.id, "Usage:\n/punta <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers")
   end
 
   def validate_message(message, text)
