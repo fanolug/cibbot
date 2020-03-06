@@ -73,13 +73,13 @@ class Bot
       if text.data == 'yes'
         reply_chatid = @DB[:users].where(:username=>mentioned_user(message)).get(:chatid)
         send_message(text.from.id, "[reply-confirm] Hai confermato a @#{mentioned_user(message)} che vai a #{punta_message(message)} #@check #@callmegesture")
-        send_reply(reply_chatid, "[reply] @#{text.from.username} viene a #{punta_message(message)} #@check #@lovehornsgesture")
+        send_reply(reply_chatid, "[reply-confirm] @#{text.from.username} viene a #{punta_message(message)} #@check #@lovehornsgesture")
         edit_message(text.from.id, text.message.message_id, "#{message} #@check", nil)
         logger.info "Sending Reply: user=#{text.from.username} text=vado a #{text.message}, uid:#{text.from.id}"
       end
       if text.data == 'no'
         reply_chatid = @DB[:users].where(:username=>mentioned_user(message)).get(:chatid)
-        send_message(text.from.id, "[reply-confirm] Hai avvisato a @#{mentioned_user(message)} che NON andrai a #{punta_message(message)} #@uncheck")
+        send_message(text.from.id, "[reply-reject] Hai avvisato a @#{mentioned_user(message)} che NON andrai a #{punta_message(message)} #@uncheck")
         send_reply(reply_chatid, "[reply-reject] @#{text.from.username} non viene a #{punta_message(message)} #@uncheck")
         edit_message(text.from.id, text.message.message_id, "#{message} #@uncheck", nil)
         logger.info "Sending Reply: user=#{text.from.username} text=non vado a #{text.message}, uid:#{text.from.id}"
