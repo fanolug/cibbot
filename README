@@ -6,6 +6,10 @@ Il bot Telegram di Cibbe™
 
     bundle
 
+### Running DB migrations
+
+    bundle exec rake db:migrate
+
 ### Running tests
 
     bundle exec rake test
