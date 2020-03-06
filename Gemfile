@@ -21,4 +21,5 @@ group :development do
   gem "minitest", "~> 5.14"
   gem "minitest-reporters", "~> 1.4"
   gem "rack-test", "~> 1.1"
+  gem "mocha", "~> 1.11.2"
 end

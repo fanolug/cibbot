@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require 'minitest/reporters'
 require 'rack/test'
+require "mocha/minitest"
 
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 include Rack::Test::Methods

@@ -23,6 +23,7 @@ GEM
       builder
       minitest (>= 5.0)
       ruby-progressbar
+    mocha (1.11.2)
     multipart-post (2.1.1)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
@@ -64,6 +65,7 @@ DEPENDENCIES
   dotenv (~> 2.7.5)
   minitest (~> 5.14)
   minitest-reporters (~> 1.4)
+  mocha (~> 1.11.2)
   pg (~> 1.2.2)
   puma (~> 4.3.3)
   rack-test (~> 1.1)
