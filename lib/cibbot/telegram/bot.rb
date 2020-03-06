@@ -111,10 +111,10 @@ class Bot
       send_message(message.chat.id, users.map(:username).join(", "))
     when /^\/punta (.+)/i # /punta
       kb = [
-        Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Vado Anche Io', callback_data: 'yes', one_time_keyboard: true),
-        Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Non Vado', callback_data: 'no', one_time_keyboard: true),
+        Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Vado Anche Io', callback_data: 'yes'),
+        Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Non Vado', callback_data: 'no'),
       ]
-      markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb, one_time_keyboard: true)
+      markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
       # chatids = @DB[:users].select(:chatid).all # DEBUG
       chatids = @DB[:users].exclude(username: message.from.username).select(:chatid).all
       for chatid in chatids
