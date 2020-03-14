@@ -14,4 +14,29 @@ Il bot Telegram di Cibbe™
 
     bin/rake test
 
+### Running the app
+
+#### Prerequisites:
+
+- Copy .env.example to .env
+- Create your personal dev Telegram bot [see doc](https://core.telegram.org/bots#3-how-do-i-create-a-bot).
+- Set your bot token on the .env file (TELEGRAM_TOKEN)
+
+Start the app:
+
+    bin/rackup
+
+### Live testing with the telegram bot
+
+Expose you local server to the Internet. For example with ngrok:
+
+    ngrok http 9292
+
+Set your host (for example https://e000a960.ngrok.io) on the .env file (WEBHOOK_URL)
+
+(Re)start the app:
+
+    bin/rackup
+
+
 Copyright (c) 2020 FortunaeLUG, released under the MIT License.
