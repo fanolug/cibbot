@@ -38,8 +38,8 @@ module Cibbot
 
       # @param message [Telegram::Bot::Types::Message]
       def save_user!(message)
-        user = Cibbot::User.find(chat_id: message.chat.id) ||
-          Cibbot::User.new(chat_id: message.chat.id)
+        user = Cibbot::User.find(chat_id: message.chat.id.to_s) ||
+          Cibbot::User.new(chat_id: message.chat.id.to_s)
 
         user.set(
           username: message.from.username,
