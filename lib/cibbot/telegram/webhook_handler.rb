@@ -31,6 +31,8 @@ module Cibbot
           send_welcome_message(message)
         when "/help"
           send_help_message(message)
+        when /^\/cibbe (.+)/i
+          notify_users(message, $1)
         end
       end
 
@@ -57,6 +59,32 @@ module Cibbot
       def send_help_message(message)
         text = "Help:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
         telegram.send_message(chat_id: message.chat.id, text: text)
+      end
+
+      # @param message [Telegram::Bot::Types::Message]
+      def notify_users(message, info)
+        text = "@#{message.from.username} ha chiesto se vieni: #{info}"
+        Cibbot::User.exclude(chat_id: message.from.id).each do |user|
+          telegram.send_message(
+            chat_id: user.chat_id,
+            text: text,
+            reply_markup: notification_markup,
+          )
+        end
+      end
+
+      def button(**args)
+        ::Telegram::Bot::Types::InlineKeyboardButton.new(args)
+      end
+
+      def notification_markup
+        keyboard = [
+          button(text: "Ci vengo!", callback_data: "yes"),
+          button(text: "Non vengo.", callback_data: "no"),
+        ]
+        ::Telegram::Bot::Types::InlineKeyboardMarkup.new(
+          inline_keyboard: keyboard
+        )
       end
     end
   end
