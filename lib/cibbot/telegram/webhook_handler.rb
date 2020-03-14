@@ -29,6 +29,8 @@ module Cibbot
         when "/start"
           save_user!(message)
           send_welcome_message(message)
+        when "/help"
+          send_help_message(message)
         end
       end
 
@@ -48,6 +50,12 @@ module Cibbot
       # @param message [Telegram::Bot::Types::Message]
       def send_welcome_message(message)
         text = "Ciao #{message.from.first_name}, benvenuto!"
+        telegram.send_message(chat_id: message.chat.id, text: text)
+      end
+
+      # @param message [Telegram::Bot::Types::Message]
+      def send_help_message(message)
+        text = "Help:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
         telegram.send_message(chat_id: message.chat.id, text: text)
       end
     end
