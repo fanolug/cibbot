@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require "minitest/reporters"
+require "minitest/assert_errors"
 require "rack/test"
 require "mocha/minitest"
 

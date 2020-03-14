@@ -20,6 +20,7 @@ group :development do
   gem "sqlite3", "1.4.2"
   gem "minitest", "~> 5.14"
   gem "minitest-reporters", "~> 1.4"
+  gem "minitest-assert_errors"
   gem "rack-test", "~> 1.1"
   gem "mocha", "~> 1.11.2"
 end

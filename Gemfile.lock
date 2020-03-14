@@ -18,6 +18,8 @@ GEM
     ice_nine (0.11.2)
     inflecto (0.0.2)
     minitest (5.14.0)
+    minitest-assert_errors (0.1.0)
+      minitest
     minitest-reporters (1.4.2)
       ansi
       builder
@@ -64,6 +66,7 @@ PLATFORMS
 DEPENDENCIES
   dotenv (~> 2.7.5)
   minitest (~> 5.14)
+  minitest-assert_errors
   minitest-reporters (~> 1.4)
   mocha (~> 1.11.2)
   pg (~> 1.2.2)
