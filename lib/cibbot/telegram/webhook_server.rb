@@ -15,7 +15,7 @@ module Cibbot
       end
 
       # Handle webhooks coming from Telegram
-      post ENV['SECRET_WEBHOOK_PATH'] do
+      post ENV["WEBHOOK_SECRET_PATH"] do
         webhook_handler.call(parsed_body(request))
         200
       end
