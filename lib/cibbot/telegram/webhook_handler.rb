@@ -64,7 +64,7 @@ module Cibbot
       # @param message [Telegram::Bot::Types::Message]
       def notify_users(message, info)
         text = "@#{message.from.username} ha chiesto se vieni: #{info}"
-        Cibbot::User.exclude(chat_id: message.from.id).each do |user|
+        Cibbot::User.exclude(chat_id: message.from.id.to_s).each do |user|
           telegram.send_message(
             chat_id: user.chat_id,
             text: text,
