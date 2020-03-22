@@ -10,6 +10,9 @@ module Cibbot
     class WebhookHandler
       include Cibbot::Telegram::Client
 
+      CALLBACK_YES = "yes"
+      CALLBACK_NO = "no"
+
       def initialize
         # unicode emoji
         @sos = "\u{1F198}"
@@ -23,13 +26,12 @@ module Cibbot
         @callmegesture = "\u{1F919}"
         @likegesture = "\u{1F44D}"
       end
-      
+
       # @param data [JSON] The request data
       def call(data)
         if data["message"]
           handle_message(telegram_message(data))
-        end
-        if data["callback_query"]
+        elsif data["callback_query"]
           handle_callback_query(telegram_callback_query(data))
         end
       end
@@ -43,7 +45,7 @@ module Cibbot
       end
 
       # @param data [JSON] The message data
-      # @return [Telegram::Bot::Types::CallbackQuery] The Telegram message
+      # @return [Telegram::Bot::Types::CallbackQuery] The Telegram callback query
       def telegram_callback_query(data)
         ::Telegram::Bot::Types::CallbackQuery.new(data["callback_query"])
       end
@@ -68,17 +70,13 @@ module Cibbot
         end
       end
 
-      # @param message [Telegram::Bot::Types::Message]
+      # @param message [Telegram::Bot::Types::CallbackQuery]
       def handle_callback_query(message)
-        case message
-        when ::Telegram::Bot::Types::CallbackQuery
-          # Here you can handle your callbacks from inline buttons
-          if message.data == 'yes'
-            reply_to_yes(message)
-          end
-          if message.data == 'no'
-            reply_to_no(message)
-          end
+        case message.data
+        when CALLBACK_YES
+          reply_to_yes(message)
+        when CALLBACK_NO
+          reply_to_no(message)
         end
       end
 
@@ -141,11 +139,12 @@ module Cibbot
           end
         end
       end
-    
+
       def punta_message(message)
         message.message.text.split(':').values_at(1..-1).join(" ").strip
       end
 
+      # @param message [Telegram::Bot::Types::CallbackQuery]
       def reply_to_yes(message)
         reply_chatid = Integer(Cibbot::User.where(username: mentioned_user(message)).get(:chat_id))
         from_chatid = message.from.id
@@ -154,6 +153,7 @@ module Cibbot
         telegram.edit_message_text(chat_id: from_chatid, message_id: message.message.message_id, text: "#{message.message} #@check", reply_markup: nil)
       end
 
+      # @param message [Telegram::Bot::Types::CallbackQuery]
       def reply_to_no(message)
         reply_chatid = Integer(Cibbot::User.where(username: mentioned_user(message)).get(:chat_id))
         from_chatid = message.from.id
