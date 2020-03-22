@@ -59,6 +59,9 @@ module Cibbot
           send_welcome_message(message, menu_markup)
         when "/help"
           send_help_message(message)
+        when "/stop"
+          delete_user!(message)
+          send_goodbye_message(message, remove_menu_markup)
         when "/users"
           send_users_list(message)
         when /^\/cibbe (.+)/i
@@ -90,8 +93,20 @@ module Cibbot
       end
 
       # @param message [Telegram::Bot::Types::Message]
+      def delete_user!(message)
+        user = Cibbot::User.find(chat_id: message.chat.id.to_s)
+        user.delete
+      end
+
+      # @param message [Telegram::Bot::Types::Message]
       def send_welcome_message(message, markup)
         text = "Ciao #{message.from.first_name}, benvenuto! #@wave"
+        telegram.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
+      end
+
+       # @param message [Telegram::Bot::Types::Message]
+       def send_goodbye_message(message, markup)
+        text = "Ciao #{message.from.first_name}, ci dispiace vederti andare via #@cry!"
         telegram.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
       end
 
@@ -134,6 +149,10 @@ module Cibbot
           ::Telegram::Bot::Types::KeyboardButton.new(text: '/stop'),
         ]
         ::Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: keyboard, one_time_keyboard: true)
+      end
+
+      def remove_menu_markup
+        ::Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
       end
 
       def mentioned_user(message)
