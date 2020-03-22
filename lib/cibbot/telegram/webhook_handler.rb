@@ -10,9 +10,28 @@ module Cibbot
     class WebhookHandler
       include Cibbot::Telegram::Client
 
+      def initialize
+        # unicode emoji
+        @sos = "\u{1F198}"
+        @info = "\u{2139}"
+        @pushpin = "\u{1F4CD}"
+        @calendar = "\u{1F4C5}"
+        @check = "\u{2705}"
+        @uncheck = "\u{274C}"
+        @cry = "\u{1F622}"
+        @lovehornsgesture = "\u{1F91F}"
+        @callmegesture = "\u{1F919}"
+        @likegesture = "\u{1F44D}"
+      end
+      
       # @param data [JSON] The request data
       def call(data)
-        handle_message(telegram_message(data))
+        if data["message"]
+          handle_message(telegram_message(data))
+        end
+        if data["callback_query"]
+          handle_callback_query(telegram_callback_query(data))
+        end
       end
 
       private
@@ -23,6 +42,12 @@ module Cibbot
         ::Telegram::Bot::Types::Message.new(data["message"])
       end
 
+      # @param data [JSON] The message data
+      # @return [Telegram::Bot::Types::CallbackQuery] The Telegram message
+      def telegram_callback_query(data)
+        ::Telegram::Bot::Types::CallbackQuery.new(data["callback_query"])
+      end
+
       # @param message [Telegram::Bot::Types::Message]
       def handle_message(message)
         case message.text
@@ -31,8 +56,29 @@ module Cibbot
           send_welcome_message(message)
         when "/help"
           send_help_message(message)
+        when "/users"
+          users = Cibbot::User.all
+          list_users = []
+          users.each do | user |
+            list_users.push(user.username)
+          end
+          telegram.send_message(chat_id: message.chat.id, text: list_users.join(", "))
         when /^\/cibbe (.+)/i
           notify_users(message, $1)
+        end
+      end
+
+      # @param message [Telegram::Bot::Types::Message]
+      def handle_callback_query(message)
+        case message
+        when ::Telegram::Bot::Types::CallbackQuery
+          # Here you can handle your callbacks from inline buttons
+          if message.data == 'yes'
+            reply_to_yes(message)
+          end
+          if message.data == 'no'
+            reply_to_no(message)
+          end
         end
       end
 
@@ -64,6 +110,7 @@ module Cibbot
       # @param message [Telegram::Bot::Types::Message]
       def notify_users(message, info)
         text = "@#{message.from.username} ha chiesto se vieni: #{info}"
+        # Cibbot::User.all.each do |user| # DEBUG
         Cibbot::User.exclude(chat_id: message.from.id.to_s).each do |user|
           telegram.send_message(
             chat_id: user.chat_id,
@@ -85,6 +132,34 @@ module Cibbot
         ::Telegram::Bot::Types::InlineKeyboardMarkup.new(
           inline_keyboard: keyboard
         )
+      end
+
+      def mentioned_user(message)
+        message.message.text.split(' ').each do | word |
+          if word.include? "@"
+            return word.split("@")[1]
+          end
+        end
+      end
+    
+      def punta_message(message)
+        message.message.text.split(':').values_at(1..-1).join(" ").strip
+      end
+
+      def reply_to_yes(message)
+        reply_chatid = Integer(Cibbot::User.where(username: mentioned_user(message)).get(:chat_id))
+        from_chatid = message.from.id
+        telegram.send_message(chat_id: from_chatid, text: "[reply-confirm] Hai confermato a @#{mentioned_user(message)} che vai a #{punta_message(message)} #@check #@callmegesture")
+        telegram.send_message(chat_id: reply_chatid, text: "[reply-confirm] @#{message.from.username} viene a #{punta_message(message)} #@check #@lovehornsgesture")
+        telegram.edit_message_text(chat_id: from_chatid, message_id: message.message.message_id, text: "#{message.message} #@check", reply_markup: nil)
+      end
+
+      def reply_to_no(message)
+        reply_chatid = Integer(Cibbot::User.where(username: mentioned_user(message)).get(:chat_id))
+        from_chatid = message.from.id
+        telegram.send_message(chat_id: from_chatid, text: "[reply-reject] Hai avvisato @#{mentioned_user(message)} che NON vai a #{punta_message(message)} #@uncheck")
+        telegram.send_message(chat_id: reply_chatid, text: "[reply-reject] @#{message.from.username} NON viene a #{punta_message(message)} #@uncheck")
+        telegram.edit_message_text(chat_id: from_chatid, message_id: message.message.message_id, text: "#{message.message} #@uncheck", reply_markup: nil)
       end
     end
   end
