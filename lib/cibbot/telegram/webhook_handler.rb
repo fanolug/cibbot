@@ -16,6 +16,7 @@ module Cibbot
       def initialize
         # unicode emoji
         @sos = "\u{1F198}"
+        @wave = "\u{1F44B}"
         @info = "\u{2139}"
         @pushpin = "\u{1F4CD}"
         @calendar = "\u{1F4C5}"
@@ -90,19 +91,19 @@ module Cibbot
 
       # @param message [Telegram::Bot::Types::Message]
       def send_welcome_message(message, markup)
-        text = "Ciao #{message.from.first_name}, benvenuto!"
+        text = "Ciao #{message.from.first_name}, benvenuto! #@wave"
         telegram.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
       end
 
       # @param message [Telegram::Bot::Types::Message]
       def send_help_message(message)
-        text = "Help:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
+        text = "Help #@sos #@info:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
         telegram.send_message(chat_id: message.chat.id, text: text)
       end
 
       # @param message [Telegram::Bot::Types::Message]
       def notify_users(message, info)
-        text = "@#{message.from.username} ha chiesto se vieni: #{info}"
+        text = "#@pushpin #@calendar @#{message.from.username} ha chiesto se vieni: #{info}"
         Cibbot::User.exclude(chat_id: message.from.id.to_s).each do |user|
           telegram.send_message(
             chat_id: user.chat_id,
