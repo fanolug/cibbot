@@ -6,6 +6,7 @@ require_relative "../logging"
 
 include Logging
 
+Sequel.extension :migration
 Sequel::Model.plugin :timestamps
 
 DB = Sequel.connect(ENV["DATABASE_URL"])
