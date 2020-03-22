@@ -59,12 +59,7 @@ module Cibbot
         when "/help"
           send_help_message(message)
         when "/users"
-          users = Cibbot::User.all
-          list_users = []
-          users.each do | user |
-            list_users.push(user.username)
-          end
-          telegram.send_message(chat_id: message.chat.id, text: list_users.join(", "))
+          send_users_list(message)
         when /^\/cibbe (.+)/i
           notify_users(message, $1)
         end
@@ -108,7 +103,6 @@ module Cibbot
       # @param message [Telegram::Bot::Types::Message]
       def notify_users(message, info)
         text = "@#{message.from.username} ha chiesto se vieni: #{info}"
-        # Cibbot::User.all.each do |user| # DEBUG
         Cibbot::User.exclude(chat_id: message.from.id.to_s).each do |user|
           telegram.send_message(
             chat_id: user.chat_id,
@@ -160,6 +154,12 @@ module Cibbot
         telegram.send_message(chat_id: from_chatid, text: "[reply-reject] Hai avvisato @#{mentioned_user(message)} che NON vai a #{punta_message(message)} #@uncheck")
         telegram.send_message(chat_id: reply_chatid, text: "[reply-reject] @#{message.from.username} NON viene a #{punta_message(message)} #@uncheck")
         telegram.edit_message_text(chat_id: from_chatid, message_id: message.message.message_id, text: "#{message.message} #@uncheck", reply_markup: nil)
+      end
+
+      # @param message [Telegram::Bot::Types::Message]
+      def send_users_list(message)
+        user_names = Cibbot::User.select_map(:username)
+        telegram.send_message(chat_id: message.chat.id, text: user_names.join(", "))
       end
     end
   end
