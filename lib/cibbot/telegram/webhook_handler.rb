@@ -55,7 +55,7 @@ module Cibbot
         case message.text
         when "/start"
           save_user!(message)
-          send_welcome_message(message)
+          send_welcome_message(message, menu_markup)
         when "/help"
           send_help_message(message)
         when "/users"
@@ -89,9 +89,9 @@ module Cibbot
       end
 
       # @param message [Telegram::Bot::Types::Message]
-      def send_welcome_message(message)
+      def send_welcome_message(message, markup)
         text = "Ciao #{message.from.first_name}, benvenuto!"
-        telegram.send_message(chat_id: message.chat.id, text: text)
+        telegram.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
       end
 
       # @param message [Telegram::Bot::Types::Message]
@@ -124,6 +124,15 @@ module Cibbot
         ::Telegram::Bot::Types::InlineKeyboardMarkup.new(
           inline_keyboard: keyboard
         )
+      end
+
+      def menu_markup
+        keyboard = [
+          ::Telegram::Bot::Types::KeyboardButton.new(text: '/start'),
+          ::Telegram::Bot::Types::KeyboardButton.new(text: '/help'),
+          ::Telegram::Bot::Types::KeyboardButton.new(text: '/stop'),
+        ]
+        ::Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: keyboard, one_time_keyboard: true)
       end
 
       def mentioned_user(message)
