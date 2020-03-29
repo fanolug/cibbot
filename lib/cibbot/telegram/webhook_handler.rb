@@ -16,6 +16,7 @@ module Cibbot
       def initialize
         # unicode emoji
         @sos = "\u{1F198}"
+        @wave = "\u{1F44B}"
         @info = "\u{2139}"
         @pushpin = "\u{1F4CD}"
         @calendar = "\u{1F4C5}"
@@ -55,9 +56,12 @@ module Cibbot
         case message.text
         when "/start"
           save_user!(message)
-          send_welcome_message(message)
+          send_welcome_message(message, menu_markup)
         when "/help"
           send_help_message(message)
+        when "/stop"
+          delete_user!(message)
+          send_goodbye_message(message, remove_menu_markup)
         when "/users"
           send_users_list(message)
         when /^\/cibbe (.+)/i
@@ -89,20 +93,32 @@ module Cibbot
       end
 
       # @param message [Telegram::Bot::Types::Message]
-      def send_welcome_message(message)
-        text = "Ciao #{message.from.first_name}, benvenuto!"
-        telegram.send_message(chat_id: message.chat.id, text: text)
+      def delete_user!(message)
+        user = Cibbot::User.find(chat_id: message.chat.id.to_s)
+        user.delete
+      end
+
+      # @param message [Telegram::Bot::Types::Message]
+      def send_welcome_message(message, markup)
+        text = "Ciao #{message.from.first_name}, benvenuto! #@wave"
+        telegram.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
+      end
+
+       # @param message [Telegram::Bot::Types::Message]
+       def send_goodbye_message(message, markup)
+        text = "Ciao #{message.from.first_name}, ci dispiace vederti andare via #@cry!"
+        telegram.send_message(chat_id: message.chat.id, text: text, reply_markup: markup)
       end
 
       # @param message [Telegram::Bot::Types::Message]
       def send_help_message(message)
-        text = "Help:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
+        text = "Help #@sos #@info:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
         telegram.send_message(chat_id: message.chat.id, text: text)
       end
 
       # @param message [Telegram::Bot::Types::Message]
       def notify_users(message, info)
-        text = "@#{message.from.username} ha chiesto se vieni: #{info}"
+        text = "#@pushpin #@calendar @#{message.from.username} ha chiesto se vieni: #{info}"
         Cibbot::User.exclude(chat_id: message.from.id.to_s).each do |user|
           telegram.send_message(
             chat_id: user.chat_id,
@@ -124,6 +140,19 @@ module Cibbot
         ::Telegram::Bot::Types::InlineKeyboardMarkup.new(
           inline_keyboard: keyboard
         )
+      end
+
+      def menu_markup
+        keyboard = [
+          ::Telegram::Bot::Types::KeyboardButton.new(text: '/start'),
+          ::Telegram::Bot::Types::KeyboardButton.new(text: '/help'),
+          ::Telegram::Bot::Types::KeyboardButton.new(text: '/stop'),
+        ]
+        ::Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: keyboard, one_time_keyboard: true)
+      end
+
+      def remove_menu_markup
+        ::Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
       end
 
       def mentioned_user(message)
