@@ -1,6 +1,7 @@
 require "minitest/autorun"
 require "minitest/reporters"
 require "minitest/assert_errors"
+require "minitest/hooks/default"
 require "rack/test"
 require "mocha/minitest"
 
@@ -17,4 +18,10 @@ ENV["TELEGRAM_TOKEN"] = "the-telegram-token"
 
 class Minitest::Spec
   Sequel::Migrator.run(DB, "db/migrate")
+end
+
+class Minitest::HooksSpec
+  def around
+    DB.transaction(rollback: :always, auto_savepoint: true) { super }
+  end
 end

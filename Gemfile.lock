@@ -20,6 +20,8 @@ GEM
     minitest (5.14.0)
     minitest-assert_errors (0.1.0)
       minitest
+    minitest-hooks (1.5.0)
+      minitest (> 5.3)
     minitest-reporters (1.4.2)
       ansi
       builder
@@ -67,6 +69,7 @@ DEPENDENCIES
   dotenv (~> 2.7.5)
   minitest (~> 5.14)
   minitest-assert_errors
+  minitest-hooks
   minitest-reporters (~> 1.4)
   mocha (~> 1.11.2)
   pg (~> 1.2.2)
