@@ -50,6 +50,18 @@ module Cibbot
         )
       end
 
+      # @param username [String]
+      # @param text [String]
+      # @param chat_id [String]
+      def send_cibbe(username:, text:, chat_id:)
+        text = "#{emoji(:pushpin)} #{emoji(:calendar)} @#{username} ha chiesto se vieni: #{text}"
+        telegram.send_message(
+          chat_id: chat_id,
+          text: text,
+          reply_markup: notification_markup
+        )
+      end
+
       # @param message [Telegram::Bot::Types::CallbackQuery]
       def reply_to_yes(message)
         reply_chatid = Integer(Cibbot::User.where(username: mentioned_user(message)).get(:chat_id))
@@ -117,6 +129,22 @@ module Cibbot
 
       def remove_menu_markup
         ::Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
+      end
+
+      def notification_markup
+        keyboard = [
+          ::Telegram::Bot::Types::InlineKeyboardButton.new(
+            text: "Ci vengo!",
+            callback_data: "yes"
+          ),
+          ::Telegram::Bot::Types::InlineKeyboardButton.new(
+            text: "Non vengo.",
+            callback_data: "no"
+          ),
+        ]
+        ::Telegram::Bot::Types::InlineKeyboardMarkup.new(
+          inline_keyboard: keyboard
+        )
       end
     end
   end

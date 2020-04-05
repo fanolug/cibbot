@@ -3,20 +3,21 @@
 require "json"
 require "telegram/bot"
 require_relative "../models/user"
-require_relative "client"
 require_relative "responder"
-require_relative "emoji"
 
 module Cibbot
   module Telegram
     class WebhookHandler
-      include Cibbot::Telegram::Client
-      include Cibbot::Telegram::Emoji
-
       CALLBACK_YES = "yes"
       CALLBACK_NO = "no"
 
-      # @param data [JSON] The request data
+      attr_reader :responder
+
+      def initialize
+        @responder = Cibbot::Telegram::Responder.new
+      end
+
+      # @param data [Hash] The request data
       def call(data)
         if data["message"]
           handle_message(telegram_message(data))
@@ -67,10 +68,6 @@ module Cibbot
         end
       end
 
-      def responder
-        Cibbot::Telegram::Responder.new
-      end
-
       # @param message [Telegram::Bot::Types::Message]
       def save_user!(message)
         user = Cibbot::User.find(chat_id: message.chat.id.to_s) ||
@@ -87,33 +84,19 @@ module Cibbot
       # @param message [Telegram::Bot::Types::Message]
       def delete_user!(message)
         user = Cibbot::User.find(chat_id: message.chat.id.to_s)
-        user.delete
+        user&.delete
       end
 
       # @param message [Telegram::Bot::Types::Message]
-      def notify_users(message, info)
-        text = "#{emoji(:pushpin)} #{emoji(:calendar)} @#{message.from.username} ha chiesto se vieni: #{info}"
+      # @param text [String]
+      def notify_users(message, text)
         Cibbot::User.exclude(chat_id: message.from.id.to_s).each do |user|
-          telegram.send_message(
-            chat_id: user.chat_id,
+          responder.send_cibbe(
+            username: message.from.username,
             text: text,
-            reply_markup: notification_markup,
+            chat_id: user.chat_id
           )
         end
-      end
-
-      def button(**args)
-        ::Telegram::Bot::Types::InlineKeyboardButton.new(args)
-      end
-
-      def notification_markup
-        keyboard = [
-          button(text: "Ci vengo!", callback_data: "yes"),
-          button(text: "Non vengo.", callback_data: "no"),
-        ]
-        ::Telegram::Bot::Types::InlineKeyboardMarkup.new(
-          inline_keyboard: keyboard
-        )
       end
     end
   end

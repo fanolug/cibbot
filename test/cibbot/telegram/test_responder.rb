@@ -72,6 +72,17 @@ describe Cibbot::Telegram::Responder do
     end
   end
 
+  describe "#send_cibbe" do
+    it "sends the message" do
+      ::Telegram::Bot::Api.any_instance.expects(:send_message).with do |args|
+        args[:chat_id] == "999"
+        args[:text] == "@pippo ha chiesto se vieni: some text"
+        args[:reply_markup].kind_of? ::Telegram::Bot::Types::InlineKeyboardMarkup
+      end
+      instance.send_cibbe(username: "pippo", text: "some text", chat_id: "999")
+    end
+  end
+
   describe "#reply_to_yes" do
     before do
       Cibbot::User.create username: "test_user", first_name: "Test Name", chat_id: 111
