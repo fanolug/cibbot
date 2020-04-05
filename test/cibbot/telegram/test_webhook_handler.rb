@@ -33,9 +33,7 @@ describe Cibbot::Telegram::WebhookHandler do
         end
 
         it "sends the message" do
-          responder.expects(:send_welcome_message).with do |arg|
-            arg.kind_of? ::Telegram::Bot::Types::Message
-          end
+          responder.expects(:send_welcome_message).with(chat_id: 666, name: "Pippo")
           call
         end
       end
@@ -44,9 +42,7 @@ describe Cibbot::Telegram::WebhookHandler do
         let(:text) { "/help" }
 
         it "sends the message" do
-          responder.expects(:send_help_message).with do |arg|
-            arg.kind_of? ::Telegram::Bot::Types::Message
-          end
+          responder.expects(:send_help_message).with(chat_id: 666)
           call
         end
       end
@@ -67,9 +63,7 @@ describe Cibbot::Telegram::WebhookHandler do
         end
 
         it "sends the message" do
-          responder.expects(:send_goodbye_message).with do |arg|
-            arg.kind_of? ::Telegram::Bot::Types::Message
-          end
+          responder.expects(:send_goodbye_message).with(chat_id: 666, name: "Pippo")
           call
         end
       end
@@ -78,9 +72,7 @@ describe Cibbot::Telegram::WebhookHandler do
         let(:text) { "/users" }
 
         it "sends the message" do
-          responder.expects(:send_users_list).with do |arg|
-            arg.kind_of? ::Telegram::Bot::Types::Message
-          end
+          responder.expects(:send_users_list).with(chat_id: 666)
           call
         end
       end

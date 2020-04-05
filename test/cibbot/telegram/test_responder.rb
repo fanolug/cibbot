@@ -3,12 +3,6 @@ require_relative "../../../lib/cibbot/telegram/responder"
 
 describe Cibbot::Telegram::Responder do
   let(:instance) { Cibbot::Telegram::Responder.new }
-  let(:telegram_message) do
-    ::Telegram::Bot::Types::Message.new(
-      from: telegram_user,
-      chat: telegram_chat
-    )
-  end
   let(:telegram_callback_query) do
     ::Telegram::Bot::Types::CallbackQuery.new(
       from: telegram_user,
@@ -32,7 +26,7 @@ describe Cibbot::Telegram::Responder do
         args[:text].match? /Ciao Pippo, benvenuto!/
         args[:reply_markup].kind_of? ::Telegram::Bot::Types::ReplyKeyboardMarkup
       end
-      instance.send_welcome_message(telegram_message)
+      instance.send_welcome_message(chat_id: 666, name: "Pippo")
     end
   end
 
@@ -43,7 +37,7 @@ describe Cibbot::Telegram::Responder do
         args[:text].match? /Ciao Pippo, ci dispiace vederti andare via/
         args[:reply_markup].kind_of? ::Telegram::Bot::Types::ReplyKeyboardRemove
       end
-      instance.send_goodbye_message(telegram_message)
+      instance.send_goodbye_message(chat_id: 666, name: "Pippo")
     end
   end
 
@@ -53,7 +47,7 @@ describe Cibbot::Telegram::Responder do
         args[:chat_id] == 666
         args[:text].match? /Help/
       end
-      instance.send_help_message(telegram_message)
+      instance.send_help_message(chat_id: 666)
     end
   end
 
@@ -68,7 +62,7 @@ describe Cibbot::Telegram::Responder do
         args[:chat_id] == 666
         args[:text] == "test_user, test_user2"
       end
-      instance.send_users_list(telegram_message)
+      instance.send_users_list(chat_id: 666)
     end
   end
 

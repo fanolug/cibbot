@@ -42,17 +42,20 @@ module Cibbot
 
       # @param message [Telegram::Bot::Types::Message]
       def handle_message(message)
+        chat_id = message.chat.id
+        name = message.from.first_name
+
         case message.text
         when "/start"
           save_user!(message)
-          responder.send_welcome_message(message)
+          responder.send_welcome_message(name: name, chat_id: chat_id)
         when "/help"
-          responder.send_help_message(message)
+          responder.send_help_message(chat_id: chat_id)
         when "/stop"
           delete_user!(message)
-          responder.send_goodbye_message(message)
+          responder.send_goodbye_message(name: name, chat_id: chat_id)
         when "/users"
-          responder.send_users_list(message)
+          responder.send_users_list(chat_id: chat_id)
         when /^\/cibbe (.+)/i
           notify_users(message, $1)
         end
