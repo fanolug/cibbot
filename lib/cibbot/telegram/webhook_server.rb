@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-require 'sinatra/base'
-require 'json'
-require 'telegram/bot'
-require_relative 'webhook_handler'
+require "sinatra/base"
+require "json"
+require "telegram/bot"
+require_relative "webhook_handler"
 
 module Cibbot
   module Telegram
     class WebhookServer < Sinatra::Base
       enable :logging
 
-      get '/' do
-        'Cibbot by FortunaeLUG'
+      get "/" do
+        "Cibbot by FortunaeLUG"
       end
 
       # Handle webhooks coming from Telegram
