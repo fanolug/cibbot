@@ -5,29 +5,16 @@ require "telegram/bot"
 require_relative "../models/user"
 require_relative "client"
 require_relative "responder"
+require_relative "emoji"
 
 module Cibbot
   module Telegram
     class WebhookHandler
       include Cibbot::Telegram::Client
+      include Cibbot::Telegram::Emoji
 
       CALLBACK_YES = "yes"
       CALLBACK_NO = "no"
-
-      def initialize
-        # unicode emoji
-        @sos = "\u{1F198}"
-        @wave = "\u{1F44B}"
-        @info = "\u{2139}"
-        @pushpin = "\u{1F4CD}"
-        @calendar = "\u{1F4C5}"
-        @check = "\u{2705}"
-        @uncheck = "\u{274C}"
-        @cry = "\u{1F622}"
-        @lovehornsgesture = "\u{1F91F}"
-        @callmegesture = "\u{1F919}"
-        @likegesture = "\u{1F44D}"
-      end
 
       # @param data [JSON] The request data
       def call(data)
@@ -72,7 +59,6 @@ module Cibbot
 
       # @param message [Telegram::Bot::Types::CallbackQuery]
       def handle_callback_query(message)
-        pp message
         case message.data
         when CALLBACK_YES
           responder.reply_to_yes(message)
@@ -106,7 +92,7 @@ module Cibbot
 
       # @param message [Telegram::Bot::Types::Message]
       def notify_users(message, info)
-        text = "#@pushpin #@calendar @#{message.from.username} ha chiesto se vieni: #{info}"
+        text = "#{emoji(:pushpin)} #{emoji(:calendar)} @#{message.from.username} ha chiesto se vieni: #{info}"
         Cibbot::User.exclude(chat_id: message.from.id.to_s).each do |user|
           telegram.send_message(
             chat_id: user.chat_id,

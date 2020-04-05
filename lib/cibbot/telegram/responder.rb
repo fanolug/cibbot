@@ -4,15 +4,17 @@ require "json"
 require "telegram/bot"
 require_relative "../models/user"
 require_relative "client"
+require_relative "emoji"
 
 module Cibbot
   module Telegram
     class Responder
       include Cibbot::Telegram::Client
+      include Cibbot::Telegram::Emoji
 
       # @param message [Telegram::Bot::Types::Message]
       def send_welcome_message(message)
-        text = "Ciao #{message.from.first_name}, benvenuto! #@wave"
+        text = "Ciao #{message.from.first_name}, benvenuto! #{emoji(:wave)}"
         telegram.send_message(
           chat_id: message.chat.id,
           text: text,
@@ -22,7 +24,7 @@ module Cibbot
 
        # @param message [Telegram::Bot::Types::Message]
        def send_goodbye_message(message)
-        text = "Ciao #{message.from.first_name}, ci dispiace vederti andare via #@cry!"
+        text = "Ciao #{message.from.first_name}, ci dispiace vederti andare via #{emoji(:cry)}!"
         telegram.send_message(
           chat_id: message.chat.id,
           text: text,
@@ -32,7 +34,7 @@ module Cibbot
 
       # @param message [Telegram::Bot::Types::Message]
       def send_help_message(message)
-        text = "Help #@sos #@info:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
+        text = "Help #{emoji(:sos)} #{emoji(:info)}:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
         telegram.send_message(
           chat_id: message.chat.id,
           text: text
@@ -54,15 +56,15 @@ module Cibbot
         from_chatid = message.from.id
         telegram.send_message(
           chat_id: from_chatid,
-          text: "[reply-confirm] Hai confermato a @#{mentioned_user(message)} che vai a #{punta_message(message)} #@check #@callmegesture"
+          text: "[reply-confirm] Hai confermato a @#{mentioned_user(message)} che vai a #{punta_message(message)} #{emoji(:check)} #{emoji(:callme)}"
         )
         telegram.send_message(
           chat_id: reply_chatid,
-          text: "[reply-confirm] @#{message.from.username} viene a #{punta_message(message)} #@check #@lovehornsgesture")
+          text: "[reply-confirm] @#{message.from.username} viene a #{punta_message(message)} #{emoji(:check)} #{emoji(:lovehorns)}")
         telegram.edit_message_text(
           chat_id: from_chatid,
           message_id: message.message.message_id,
-          text: "#{message.message} #@check",
+          text: "#{message.message} #{emoji(:check)}",
           reply_markup: nil
         )
       end
@@ -73,16 +75,16 @@ module Cibbot
         from_chatid = message.from.id
         telegram.send_message(
           chat_id: from_chatid,
-          text: "[reply-reject] Hai avvisato @#{mentioned_user(message)} che NON vai a #{punta_message(message)} #@uncheck"
+          text: "[reply-reject] Hai avvisato @#{mentioned_user(message)} che NON vai a #{punta_message(message)} #{emoji(:uncheck)}"
         )
         telegram.send_message(
           chat_id: reply_chatid,
-          text: "[reply-reject] @#{message.from.username} NON viene a #{punta_message(message)} #@uncheck"
+          text: "[reply-reject] @#{message.from.username} NON viene a #{punta_message(message)} #{emoji(:uncheck)}"
         )
         telegram.edit_message_text(
           chat_id: from_chatid,
           message_id: message.message.message_id,
-          text: "#{message.message} #@uncheck",
+          text: "#{message.message} #{emoji(:uncheck)}",
           reply_markup: nil
         )
       end
