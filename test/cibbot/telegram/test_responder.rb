@@ -77,6 +77,16 @@ describe Cibbot::Telegram::Responder do
     end
   end
 
+  describe "#send_cibbe_feedback" do
+    it "sends the message" do
+      ::Telegram::Bot::Api.any_instance.expects(:send_message).with do |args|
+        args[:chat_id] == 999
+        args[:text] == "L'invito è stato mandato a 7 persone."
+      end
+      instance.send_cibbe_feedback(chat_id: 999, count: 7)
+    end
+  end
+
   describe "#reply_to_yes" do
     before do
       Cibbot::User.create username: "test_user", first_name: "Test Name", chat_id: 111

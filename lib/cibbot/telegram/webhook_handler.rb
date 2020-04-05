@@ -93,13 +93,16 @@ module Cibbot
       # @param message [Telegram::Bot::Types::Message]
       # @param text [String]
       def notify_users(message, text)
-        Cibbot::User.exclude(chat_id: message.from.id.to_s).each do |user|
+        users = Cibbot::User.exclude(chat_id: message.from.id.to_s)
+        users.each do |user|
           responder.send_cibbe(
             username: message.from.username,
             text: text,
             chat_id: user.chat_id
           )
         end
+
+        responder.send_cibbe_feedback(chat_id: message.from.id, count: users.count)
       end
     end
   end

@@ -84,11 +84,15 @@ describe Cibbot::Telegram::WebhookHandler do
           Cibbot::User.create(chat_id: 999, username: "lino", first_name: "Lino")
         end
 
-        it "sends the message" do
+        it "sends the messages" do
           responder.expects(:send_cibbe).with do |args|
             args[:username] = "lino"
             args[:text] == "somewehere"
             args[:chat_id] == "999"
+          end
+          responder.expects(:send_cibbe_feedback).with do |args|
+            args[:chat_id] == 666
+            args[:count] == 1
           end
           call
         end

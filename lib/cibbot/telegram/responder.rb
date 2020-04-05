@@ -37,19 +37,13 @@ module Cibbot
       # @param chat_id [Integer]
       def send_help_message(chat_id:)
         text = "Help #{emoji(:sos)} #{emoji(:info)}:\n/cibbe <descrizione, luogo, orario, link eccetera> - Notifica la tua punta a tutti i cibbers"
-        telegram.send_message(
-          chat_id: chat_id,
-          text: text
-        )
+        telegram.send_message(chat_id: chat_id, text: text)
       end
 
       # @param chat_id [Integer]
       def send_users_list(chat_id:)
-        user_names = Cibbot::User.select_map(:username)
-        telegram.send_message(
-          chat_id: chat_id,
-          text: user_names.join(", ")
-        )
+        user_names = Cibbot::User.select_map(:username).join(", ")
+        telegram.send_message(chat_id: chat_id, text: user_names)
       end
 
       # @param username [String]
@@ -62,6 +56,13 @@ module Cibbot
           text: text,
           reply_markup: notification_markup
         )
+      end
+
+      # @param chat_id [Integer]
+      # @param count [Integer]
+      def send_cibbe_feedback(chat_id:, count:)
+        text = "L'invito è stato mandato a #{count} persone."
+        telegram.send_message(chat_id: chat_id, text: text)
       end
 
       # @param message [Telegram::Bot::Types::CallbackQuery]
