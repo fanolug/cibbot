@@ -15,6 +15,7 @@ module Cibbot
           ENV["TELEGRAM_TOKEN"],
           logger: logger
         ).api
+      rescue Telegram::Bot::Exceptions::ResponseError
       end
     end
   end
