@@ -32,11 +32,11 @@ Expose you local server to the Internet. For example with ngrok:
 
     ngrok http 9292
 
-Set your host (for example https://e000a960.ngrok.io) on the .env file (WEBHOOK_URL)
+Check what your public HTTPS URL is (for example https://e000a960.ngrok.io)
 
-(Re)start the app:
+(Re)start the app with the URL ENV variable:
 
-    bin/rackup
+    WEBHOOK_URL=https://e000a960.ngrok.io bin/rackup
 
 
 Copyright (c) 2020 FortunaeLUG, released under the MIT License.
