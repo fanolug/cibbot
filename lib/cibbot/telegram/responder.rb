@@ -66,41 +66,20 @@ module Cibbot
       end
 
       # @param message [Telegram::Bot::Types::CallbackQuery]
-      def reply_to_yes(message)
-        reply_chatid = Integer(Cibbot::User.where(username: mentioned_user(message.message.text)).get(:chat_id))
-        from_chatid = message.from.id
-        telegram.send_message(
-          chat_id: from_chatid,
-          text: "[reply-confirm] Hai confermato a @#{mentioned_user(message.message.text)} che vai a #{punta_message(message.message.text)} #{emoji(:check)} #{emoji(:callme)}"
-        )
-        telegram.send_message(
-          chat_id: reply_chatid,
-          text: "[reply-confirm] @#{message.from.username} viene a #{punta_message(message.message.text)} #{emoji(:check)} #{emoji(:lovehorns)}")
-        telegram.edit_message_text(
-          chat_id: from_chatid,
-          message_id: message.message.message_id,
-          text: "#{message.message} #{emoji(:check)}",
-          reply_markup: nil
+      def reply_to_yes(callback_query)
+        reply(
+          callback_query: callback_query,
+          sender_reply: "[reply-confirm] Hai confermato a @#{mentioned_user(callback_query.message.text)} che vai a #{punta_message(callback_query.message.text)} #{emoji(:check)} #{emoji(:callme)}",
+          host_reply: "[reply-confirm] @#{callback_query.from.username} viene a #{punta_message(callback_query.message.text)} #{emoji(:check)} #{emoji(:lovehorns)}"
         )
       end
 
       # @param message [Telegram::Bot::Types::CallbackQuery]
-      def reply_to_no(message)
-        reply_chatid = Integer(Cibbot::User.where(username: mentioned_user(message.message.text)).get(:chat_id))
-        from_chatid = message.from.id
-        telegram.send_message(
-          chat_id: from_chatid,
-          text: "[reply-reject] Hai avvisato @#{mentioned_user(message.message.text)} che NON vai a #{punta_message(message.message.text)} #{emoji(:uncheck)}"
-        )
-        telegram.send_message(
-          chat_id: reply_chatid,
-          text: "[reply-reject] @#{message.from.username} NON viene a #{punta_message(message.message.text)} #{emoji(:uncheck)}"
-        )
-        telegram.edit_message_text(
-          chat_id: from_chatid,
-          message_id: message.message.message_id,
-          text: "#{message.message} #{emoji(:uncheck)}",
-          reply_markup: nil
+      def reply_to_no(callback_query)
+        reply(
+          callback_query: callback_query,
+          sender_reply: "[reply-reject] Hai avvisato @#{mentioned_user(callback_query.message.text)} che NON vai a #{punta_message(callback_query.message.text)} #{emoji(:uncheck)}",
+          host_reply: "[reply-reject] @#{callback_query.from.username} NON viene a #{punta_message(callback_query.message.text)} #{emoji(:uncheck)}"
         )
       end
 
@@ -116,6 +95,21 @@ module Cibbot
 
       def punta_message(text)
         text.split(":").values_at(1..-1).join(" ").strip
+      end
+
+      def reply(callback_query:, sender_reply:, host_reply:)
+        username = mentioned_user(callback_query.message.text)
+        user = Cibbot::User.where(username: username)
+        reply_chat_id = user.get(:chat_id)
+
+        telegram.send_message(chat_id: callback_query.from.id, text: sender_reply)
+        telegram.send_message(chat_id: reply_chat_id, text: host_reply)
+        telegram.edit_message_text(
+          chat_id: callback_query.from.id,
+          message_id: callback_query.message.message_id,
+          text: "#{callback_query.message} #{emoji(:check)}",
+          reply_markup: nil
+        )
       end
 
       def menu_markup
