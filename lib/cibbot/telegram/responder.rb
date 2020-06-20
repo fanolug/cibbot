@@ -69,8 +69,8 @@ module Cibbot
       def reply_to_yes(callback_query)
         reply(
           callback_query: callback_query,
-          sender_reply: "[reply-confirm] Hai confermato a @#{mentioned_user(callback_query.message.text)} che vai a #{punta_message(callback_query.message.text)} #{emoji(:check)} #{emoji(:callme)}",
-          host_reply: "[reply-confirm] @#{callback_query.from.username} viene a #{punta_message(callback_query.message.text)} #{emoji(:check)} #{emoji(:lovehorns)}"
+          sender_reply: "[reply-confirm] Hai confermato a @#{extract_user_name(callback_query.message.text)} che vai a #{extract_invite_text(callback_query.message.text)} #{emoji(:check)} #{emoji(:callme)}",
+          host_reply: "[reply-confirm] @#{callback_query.from.username} viene a #{extract_invite_text(callback_query.message.text)} #{emoji(:check)} #{emoji(:lovehorns)}"
         )
       end
 
@@ -78,14 +78,14 @@ module Cibbot
       def reply_to_no(callback_query)
         reply(
           callback_query: callback_query,
-          sender_reply: "[reply-reject] Hai avvisato @#{mentioned_user(callback_query.message.text)} che NON vai a #{punta_message(callback_query.message.text)} #{emoji(:uncheck)}",
-          host_reply: "[reply-reject] @#{callback_query.from.username} NON viene a #{punta_message(callback_query.message.text)} #{emoji(:uncheck)}"
+          sender_reply: "[reply-reject] Hai avvisato @#{extract_user_name(callback_query.message.text)} che NON vai a #{extract_invite_text(callback_query.message.text)} #{emoji(:uncheck)}",
+          host_reply: "[reply-reject] @#{callback_query.from.username} NON viene a #{extract_invite_text(callback_query.message.text)} #{emoji(:uncheck)}"
         )
       end
 
       private
 
-      def mentioned_user(text)
+      def extract_user_name(text)
         text.split(" ").each do | word |
           if word.include? "@"
             return word.split("@")[1]
@@ -93,12 +93,12 @@ module Cibbot
         end
       end
 
-      def punta_message(text)
+      def extract_invite_text(text)
         text.split(":").values_at(1..-1).join(" ").strip
       end
 
       def reply(callback_query:, sender_reply:, host_reply:)
-        username = mentioned_user(callback_query.message.text)
+        username = extract_user_name(callback_query.message.text)
         user = Cibbot::User.where(username: username)
         reply_chat_id = user.get(:chat_id)
 
