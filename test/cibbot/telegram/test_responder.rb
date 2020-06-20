@@ -8,7 +8,7 @@ describe Cibbot::Telegram::Responder do
       from: telegram_user,
       chat: telegram_chat,
       message: ::Telegram::Bot::Types::Message.new(
-        id: 12345,
+        message_id: 12345,
         from: telegram_bot,
         chat: telegram_chat,
         text: "@test_user"
@@ -103,9 +103,9 @@ describe Cibbot::Telegram::Responder do
         args[:text].match? /@pippo viene a/
       end
 
-      ::Telegram::Bot::Api.any_instance.expects(:edit_message_text).with do |args|
-        args[:chat_id] == 12345
-        args[:reply_markup].nil?
+      ::Telegram::Bot::Api.any_instance.expects(:delete_message).with do |args|
+        args[:chat_id] == 1
+        args[:message_id] == 12345
       end
 
       instance.reply_to_yes(telegram_callback_query)
@@ -128,9 +128,9 @@ describe Cibbot::Telegram::Responder do
         args[:text].match? /@pippo NON viene a/
       end
 
-      ::Telegram::Bot::Api.any_instance.expects(:edit_message_text).with do |args|
-        args[:chat_id] == 12345
-        args[:reply_markup].nil?
+      ::Telegram::Bot::Api.any_instance.expects(:delete_message).with do |args|
+        args[:chat_id] == 1
+        args[:message_id] == 12345
       end
 
       instance.reply_to_no(telegram_callback_query)

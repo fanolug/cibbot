@@ -65,7 +65,7 @@ module Cibbot
         telegram.send_message(chat_id: chat_id, text: text)
       end
 
-      # @param message [Telegram::Bot::Types::CallbackQuery]
+      # @param callback_query [Telegram::Bot::Types::CallbackQuery]
       def reply_to_yes(callback_query)
         reply(
           callback_query: callback_query,
@@ -74,7 +74,7 @@ module Cibbot
         )
       end
 
-      # @param message [Telegram::Bot::Types::CallbackQuery]
+      # @param callback_query [Telegram::Bot::Types::CallbackQuery]
       def reply_to_no(callback_query)
         reply(
           callback_query: callback_query,
@@ -104,11 +104,9 @@ module Cibbot
 
         telegram.send_message(chat_id: callback_query.from.id, text: sender_reply)
         telegram.send_message(chat_id: reply_chat_id, text: host_reply)
-        telegram.edit_message_text(
+        telegram.delete_message(
           chat_id: callback_query.from.id,
-          message_id: callback_query.message.message_id,
-          text: "#{callback_query.message} #{emoji(:check)}",
-          reply_markup: nil
+          message_id: callback_query.message.message_id
         )
       end
 
